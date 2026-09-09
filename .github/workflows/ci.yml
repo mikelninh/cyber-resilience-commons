@@ -20,6 +20,6 @@ jobs:
         run: npm test
       - name: Verify public safety markers
         run: |
-          grep -Fq "No real systems are scanned or attacked" index.html
-          grep -Fq "explicitly authorized" simulator.js
-          grep -Fq "not a penetration test" README.md
+          grep -Fiq "No real systems are scanned or attacked" index.html
+          grep -Fiq "explicitly authorized" simulator.js
+          grep -Fiq "not a penetration test" README.md
