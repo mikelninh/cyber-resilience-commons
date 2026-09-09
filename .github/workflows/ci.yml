@@ -23,3 +23,5 @@ jobs:
           grep -Fiq "No real systems are scanned or attacked" index.html
           grep -Fiq "explicitly authorized" simulator.js
           grep -Fiq "not a penetration test" README.md
+          grep -Fiq "synthetic tabletop exercise" drill.js
+          grep -Fiq "Nothing is sent to a server" tabletop.html
