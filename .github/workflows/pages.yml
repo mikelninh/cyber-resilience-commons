@@ -1,0 +1,60 @@
+name: Deploy public app
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Verify before deploy
+        run: npm test
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Upload static site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Smoke public app
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          body="$(mktemp)"
+          for attempt in $(seq 1 36); do
+            code="$(curl --location --silent --show-error --max-time 20 --output "$body" --write-out '%{http_code}' "$PAGE_URL" || true)"
+            if [ "$code" = "200" ] && grep -Fq "See how far an incident can spread" "$body"; then
+              echo "LIVE PASS: $PAGE_URL"
+              rm -f "$body"
+              exit 0
+            fi
+            echo "Waiting for Pages propagation ($attempt/36): $code"
+            sleep 5
+          done
+          echo "LIVE FAIL: $PAGE_URL"
+          head -80 "$body" || true
+          rm -f "$body"
+          exit 1
