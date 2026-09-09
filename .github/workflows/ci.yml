@@ -25,3 +25,5 @@ jobs:
           grep -Fiq "not a penetration test" README.md
           grep -Fiq "synthetic tabletop exercise" drill.js
           grep -Fiq "Nothing is sent to a server" tabletop.html
+          grep -Fiq "no scanning" map.html
+          grep -Fiq "not a vulnerability scan" dependency-map.js
