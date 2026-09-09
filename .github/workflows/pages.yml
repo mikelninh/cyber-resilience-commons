@@ -38,7 +38,7 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
-      - name: Smoke public simulator and tabletop drill
+      - name: Smoke public simulator, dependency map and tabletop drill
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
@@ -67,4 +67,5 @@ jobs:
           }
 
           fetch_until_ready "$base/" "See how far an incident can spread"
+          fetch_until_ready "$base/map.html" "Know what depends on what"
           fetch_until_ready "$base/tabletop.html" "Practice the decisions before the pressure is real"

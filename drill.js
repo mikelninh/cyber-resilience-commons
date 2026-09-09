@@ -6,15 +6,17 @@ export const DRILL_ROLES = [
   {id:'privacy',label:'Privacy / legal',prompt:'Track sensitive-data exposure, obligations and evidence.'}
 ]
 
-export function buildInjects(scenario){
+export function buildInjects(scenario,dependencyContext=null){
+  const critical=(dependencyContext?.critical||[]).slice(0,3)
+  const focus=critical.length?` Mapped critical focus: ${critical.join(', ')}.`:''
   return scenario.steps.map((step,index)=>({
     id:`${scenario.id}-${index+1}`,
     number:index+1,
     title:step.title,
     detail:step.detail,
-    question:index===0
+    question:(index===0
       ? 'What do you do in the first 15 minutes, and who owns each action?'
-      : 'What changed? What do you contain now, what must keep running, and who needs to know?',
+      : 'What changed? What do you contain now, what must keep running, and who needs to know?')+focus,
     reflection:step.blockedBy
       ? `After the team responds, discuss whether a real ${step.blockedBy} control would stop or reduce this step — and what evidence would prove it.`
       : 'This inject is an assumed foothold. Discuss how quickly the team could detect, isolate and work around it.'
@@ -43,17 +45,29 @@ export function advanceDrill(state,totalInjects){
 
 export function restartDrill(scenario){ return createDrill(scenario) }
 
-export function buildAfterAction({template,scenario,state,catalog}){
-  const injects=buildInjects(scenario)
+export function buildAfterAction({template,scenario,state,catalog,dependencyContext=null}){
+  const injects=buildInjects(scenario,dependencyContext)
   const lines=[
     '# Cyber Resilience Commons — Tabletop After-Action Review','',
     `**Organization model:** ${template.label}`,
     `**Scenario:** ${scenario.label}`,
     `**Injects revealed:** ${state.revealed}/${injects.length}`,
     '',
-    '> This report comes from a synthetic tabletop exercise. It is not a penetration test, audit, certification, or evidence that a real organization is secure or vulnerable.','',
-    '## Decisions and observations',''
+    '> This report comes from a synthetic tabletop exercise. It is not a penetration test, audit, certification, or evidence that a real organization is secure or vulnerable.',''
   ]
+  if(dependencyContext){
+    lines.push('## Dependency context used in this drill','',
+      `- Map source: ${dependencyContext.custom?'saved browser-local map':'template dependency map'}`,
+      `- Critical nodes: ${(dependencyContext.critical||[]).join(', ')||'none declared'}`,
+      `- Services: ${(dependencyContext.services||[]).join(', ')||'none declared'}`,
+      `- Sensitive data: ${(dependencyContext.data||[]).join(', ')||'none declared'}`,
+      `- Vendors: ${(dependencyContext.vendors||[]).join(', ')||'none declared'}`,
+      `- Accountable owners: ${(dependencyContext.owners||[]).join(', ')||'none declared'}`,
+      `- Critical ownership gaps: ${(dependencyContext.unownedCritical||[]).join(', ')||'none declared'}`,
+      ''
+    )
+  }
+  lines.push('## Decisions and observations','')
   if(!state.decisions.length) lines.push('- No decisions were recorded.')
   for(const d of state.decisions){
     const inject=injects[Math.max(0,d.injectNumber-1)]
@@ -71,7 +85,8 @@ export function buildAfterAction({template,scenario,state,catalog}){
   }
   lines.push('','## After-action questions','',
     '- Which decision took too long or had no clear owner?',
-    '- Which critical service needs a documented manual fallback?',
+    '- Which mapped critical service needs a documented manual fallback?',
+    '- Which vendor or external dependency needs a narrower, faster-revocable path?',
     '- Which access or session could not be revoked quickly?',
     '- Which control is claimed but not recently proven?',
     '- What one improvement will we implement and retest first?',

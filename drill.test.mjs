@@ -40,3 +40,22 @@ test('after-action report contains team decisions, facilitator review and truth 
   assert.match(report,/not a penetration test/i)
   assert.match(report,/explicitly authorized/i)
 })
+
+test('saved dependency context can shape the drill and after-action review',()=>{
+  const dependencyContext={
+    custom:true,
+    critical:['Citizen service portal','Citizen records'],
+    services:['Citizen service portal'],
+    data:['Citizen records'],
+    vendors:['Managed IT provider'],
+    owners:['Digital services team'],
+    unownedCritical:[]
+  }
+  const injects=buildInjects(scenario,dependencyContext)
+  assert.match(injects[0].question,/Citizen service portal/)
+  const state=startDrill(createDrill(scenario))
+  const report=buildAfterAction({template:city,scenario,state,catalog:CONTROL_CATALOG,dependencyContext})
+  assert.match(report,/Dependency context used in this drill/)
+  assert.match(report,/saved browser-local map/)
+  assert.match(report,/Managed IT provider/)
+})

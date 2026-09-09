@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Map identities, services, data, vendors and owners in a private browser-local cyber resilience dependency map.">
+  <meta name="theme-color" content="#f4f1e8">
+  <title>Dependency Map — Cyber Resilience Commons</title>
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    .mapHero{padding:72px 0 34px}.mapHero h1{font-family:var(--serif);font-size:clamp(48px,6.7vw,84px);font-weight:400;line-height:.95;letter-spacing:-.045em;max-width:1000px;margin:14px 0 17px}.mapHero .lead{max-width:920px}
+    .mapShell{margin:18px 0 80px;border:1px solid var(--line);border-radius:28px;background:var(--paper);box-shadow:var(--shadow);overflow:hidden}
+    .mapToolbar{padding:18px 20px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1.2fr 1fr auto;gap:12px;align-items:end;background:#fbfaf5}
+    .mapToolbar label,.field label{font-size:8px;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:var(--muted)}
+    .mapToolbar select,.field input,.field select,.field textarea{width:100%;margin-top:6px;border:1px solid var(--line);border-radius:11px;background:white;color:var(--ink);padding:10px;font:inherit;font-size:9px}
+    .mapToolbarActions{display:flex;gap:7px;flex-wrap:wrap}.mapToolbar button,.mapToolbar a,.inspector button,.relationRow button{border:1px solid var(--line);border-radius:999px;background:white;padding:9px 11px;font-size:8px;font-weight:900;cursor:pointer;text-decoration:none;color:var(--ink)}
+    .mapToolbar .primary,.inspector .primary{background:var(--blue);color:white;border-color:var(--blue)}.mapToolbar .danger,.inspector .danger{color:var(--red)}
+    .mapStatus{padding:10px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;align-items:center;background:#f1eee6;font-size:8px;color:var(--muted)}.mapStatus b{color:var(--blue)}
+    .mapMain{display:grid;grid-template-columns:minmax(0,1fr) 330px;min-height:720px}.graphPanel{padding:20px;min-width:0}.inspector{border-left:1px solid var(--line);background:#fbf8f1;padding:20px}
+    .graphHeader{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin-bottom:12px}.graphHeader h2{font-family:var(--serif);font-size:30px;font-weight:400;margin:4px 0 0}.graphHeader p{font-size:9px;color:var(--muted);max-width:470px;margin:0}
+    .graphScroll{overflow:auto;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,#fff,#fbfaf5)}#graph{display:block;min-width:1160px}
+    .edge{fill:none;stroke:#b9c2bc;stroke-width:1.6;opacity:.75}.edge.trace{stroke:var(--blue);stroke-width:3;opacity:1}.edge.ownership{stroke-dasharray:5 5;opacity:.5}
+    .node rect{fill:white;stroke:#d3d8d4;stroke-width:1.4}.node text{pointer-events:none}.node .type{font-size:8px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;fill:#6d746e}.node .label{font-size:10px;font-weight:800;fill:#111713}.node .crit{font-size:7px;font-weight:900;fill:#143a5a}.node{cursor:pointer}.node:hover rect,.node.selected rect{stroke:var(--blue);stroke-width:2.5}.node.trace rect{fill:#e7eff5;stroke:#7ea3ba}.node.critical rect{stroke:#d4a68c}.node.trace.critical rect{stroke:var(--blue)}
+    .laneLabel{font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;fill:#143a5a}
+    .traceBox{margin-top:12px;border:1px solid var(--line);border-radius:16px;padding:14px;background:#f8f6ef}.traceBox h3{font-family:var(--serif);font-size:23px;font-weight:400;margin:0 0 5px}.traceBox p{font-size:9px;color:var(--muted);margin:0}.traceStats{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:11px}.traceStat{padding:9px;border:1px solid var(--line);border-radius:11px;background:white}.traceStat b{display:block;font-family:var(--serif);font-size:20px;font-weight:400}.traceStat span{font-size:7px;color:var(--muted)}
+    .ownerStrip{margin-top:9px;font-size:8px}.ownerStrip b{color:var(--blue)}
+    .inspector h3{font-family:var(--serif);font-size:25px;font-weight:400;margin:7px 0 10px}.inspectorSection{padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid var(--line)}.field{margin-top:9px}.field textarea{min-height:72px;resize:vertical}.fieldRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.buttonRow{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+    .emptyInspector{font-size:9px;color:var(--muted);line-height:1.6;padding:8px 0}.relations{display:grid;gap:6px;max-height:230px;overflow:auto}.relationRow{padding:8px;border:1px solid var(--line);border-radius:10px;background:white;display:grid;grid-template-columns:1fr auto;gap:7px;align-items:center}.relationRow span{font-size:8px;line-height:1.35}.relationRow button{padding:5px 7px;color:var(--red)}
+    .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:7px;color:var(--muted)}.legend span:before{content:'';display:inline-block;width:16px;height:2px;background:#b9c2bc;vertical-align:middle;margin-right:5px}.legend .ownership:before{background:repeating-linear-gradient(90deg,#b9c2bc 0 5px,transparent 5px 8px)}
+    .truth{margin-top:12px;padding:12px;border-radius:13px;background:var(--blueSoft);font-size:8px;line-height:1.55;color:#365363}
+    @media(max-width:980px){.mapMain{grid-template-columns:1fr}.inspector{border-left:0;border-top:1px solid var(--line)}.mapToolbar{grid-template-columns:1fr 1fr}.mapToolbarActions{grid-column:1/-1}.traceStats{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:650px){.mapToolbar{grid-template-columns:1fr}.mapToolbarActions{grid-column:auto}.graphPanel{padding:12px}.traceStats{grid-template-columns:repeat(2,1fr)}.fieldRow{grid-template-columns:1fr}.mapHero{padding-top:50px}}
+  </style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="brand" href="./">Cyber Resilience Commons</a><nav class="nav"><a href="./">Simulator</a><a href="./tabletop.html">Team drill</a><a href="./map.html">Dependency map</a><a href="https://github.com/mikelninh/cyber-resilience-commons">Source ↗</a></nav></div></header>
+<main>
+<section class="mapHero"><div class="wrap"><div class="eyebrow">Organization map · browser-local · no scanning</div><h1>Know what depends on what — and who owns it.</h1><p class="lead">Map identities, critical services, sensitive data, vendors and accountable owners. Then trace the connected operational scope from one assumed problem so tabletop exercises use the structure your team actually recognises.</p><div class="safe"><span>●</span><div><b>Declare dependencies; never probe them.</b> This tool does not discover assets, test access, query networks or contact vendors. Avoid secrets. Use names and planning assumptions only.</div></div></div></section>
+<section class="wrap"><div class="mapShell">
+  <div class="mapToolbar">
+    <label>Organization model<select id="template"></select></label>
+    <label>Assume a problem starts here<select id="traceStart"></select></label>
+    <div class="mapToolbarActions"><button id="trace" class="primary">Trace connected scope</button><button id="save">Save in this browser</button><button id="download">Download map</button><button id="reset" class="danger">Reset template</button></div>
+  </div>
+  <div class="mapStatus"><span id="saveState">Template baseline · not saved</span><span><b id="nodeCount"></b> nodes · <b id="edgeCount"></b> relationships</span></div>
+  <div class="mapMain">
+    <section class="graphPanel">
+      <div class="graphHeader"><div><div class="panelLabel">Dependency graph</div><h2 id="mapTitle"></h2></div><p>Solid lines are declared operational/access dependencies. Dashed lines are accountability links and are not treated as propagation paths.</p></div>
+      <div class="graphScroll"><svg id="graph" viewBox="0 0 1160 560" role="img" aria-label="Organization dependency map"></svg></div>
+      <div class="legend"><span>Declared dependency / access</span><span class="ownership">Owner accountability</span></div>
+      <div id="traceBox" class="traceBox"><h3>Choose a starting node.</h3><p>The trace shows downstream declared dependencies, not a claim that an attacker can traverse them.</p></div>
+    </section>
+    <aside class="inspector">
+      <div class="inspectorSection"><div class="panelLabel">Selected node</div><div id="nodeEditor" class="emptyInspector">Click any node in the graph to rename it, change criticality, add planning notes or remove it.</div></div>
+      <div class="inspectorSection"><div class="panelLabel">Add node</div><h3>Extend the map.</h3><div class="fieldRow"><div class="field"><label>Type<select id="newType"></select></label></div><div class="field"><label>Criticality<select id="newCriticality"><option>medium</option><option>high</option><option>critical</option><option>low</option></select></label></div></div><div class="field"><label>Label<input id="newLabel" placeholder="e.g. Payroll service"></label></div><div class="buttonRow"><button id="addNode" class="primary">Add node</button></div></div>
+      <div class="inspectorSection"><div class="panelLabel">Add relationship</div><h3>Make dependencies explicit.</h3><div class="field"><label>From<select id="edgeFrom"></select></label></div><div class="field"><label>Relationship<select id="edgeRelation"></select></label></div><div class="field"><label>To<select id="edgeTo"></select></label></div><div class="buttonRow"><button id="addEdge" class="primary">Add relationship</button></div></div>
+      <div><div class="panelLabel">Relationships</div><div id="relations" class="relations"></div><div class="truth">This map becomes useful when a team can answer: “If this identity, service or vendor is unavailable or compromised, what must we protect next — and who is accountable?”</div></div>
+    </aside>
+  </div>
+</div></section>
+</main>
+<footer class="footer"><div class="wrap"><span>Cyber Resilience Commons · dependency map</span><span>Declared planning data · browser-local · no infrastructure discovery</span></div></footer>
+<script type="module" src="./map.js"></script>
+</body>
+</html>
