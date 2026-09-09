@@ -1,15 +1,18 @@
 # Cyber Resilience Commons
 
-**A free, open-source resilience planning tool for cities, hospitals, schools, nonprofits and small organizations.**
+**A free, open-source resilience planning and tabletop exercise tool for cities, hospitals, schools, nonprofits and small organizations.**
 
-Cyber Resilience Commons helps non-specialists answer a practical question:
+Cyber Resilience Commons helps non-specialists answer two practical questions:
 
 > If one account, device, vendor, or cloud session is compromised, how far could the incident spread — and what should we fix first?
 
-The project uses transparent, deterministic **synthetic scenarios** to model blast radius, compare defensive boundaries, plan recovery drills, and produce an actionable resilience brief.
+> If that happened today, would our team know who decides, who contains it, what must keep running, and how we recover?
 
-## What you can do in v1
+The project uses transparent, deterministic **synthetic scenarios** to model blast radius, compare defensive boundaries, rehearse team decisions, plan recovery, and produce actionable briefs.
 
+## What you can do
+
+### Resilience simulator
 - Start from City, Hospital, School, NGO, or Small Business.
 - Customize basic organization assumptions without sending them to a server.
 - Rehearse stolen credentials, ransomware, vendor compromise, bulk exfiltration, and stolen SaaS/OAuth sessions.
@@ -19,9 +22,18 @@ The project uses transparent, deterministic **synthetic scenarios** to model bla
 - See a concrete suggestion for how each boundary could be proven in an owned or explicitly authorized environment.
 - Download or print a resilience brief.
 
+### Team tabletop drill
+- Run a 15–30 minute facilitated exercise in the browser.
+- Assign practical roles: incident lead, IT/security, operations, communications, privacy/legal.
+- Reveal the synthetic incident one inject at a time rather than reading ahead.
+- Record who owns each decision and what the team does next.
+- Keep the decision log browser-local.
+- Download an after-action review with lessons, proof questions, and improvement prompts.
+
 ## What it is
 
 - A public-interest cyber resilience simulator and planning tool.
+- A lightweight team exercise for organizations without a large security program.
 - A way to rehearse `MAP → ASSUME → CONTAIN → RECOVER → PROVE → SHARE`.
 - A transparent set of reusable organization templates and incident scenarios.
 - A practical bridge between security language and decisions leaders can understand.
@@ -46,9 +58,11 @@ npm test
 python -m http.server 8000
 ```
 
-Then open `http://localhost:8000`.
+Then open:
+- `http://localhost:8000/` — resilience simulator
+- `http://localhost:8000/tabletop.html` — team tabletop drill
 
-No install step or backend is required for v1.
+No install step or backend is required.
 
 ## Engineering standard
 
@@ -57,6 +71,10 @@ No install step or backend is required for v1.
 The release contract, autonomy boundary, decisions, evals, and runbook live in `.ai-build/`.
 
 Evidence before claims. Humans retain judgement.
+
+## Deployment status
+
+The app and deterministic CI are ready on `main`. The repository includes a GitHub Pages workflow with tests-before-deploy and live smoke checks. Because this is a new repository, GitHub Pages must be enabled once in repository settings before the workflow can create the first public deployment.
 
 ## License
 
