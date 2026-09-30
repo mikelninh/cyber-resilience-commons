@@ -94,3 +94,9 @@ The app includes deterministic CI plus a GitHub Pages workflow with tests-before
 ## License
 
 MIT. Reuse, adapt, translate, and improve it. The goal is a civic commons: understandable, auditable and useful to organizations that cannot afford a large security team.
+
+## Release evidence
+
+A completed tabletop can emit an `openaction.agency-receipt.v1` through `release-gate.mjs`. The automated gate can verify completion, recorded decisions and truth boundaries. It deliberately keeps the final verdict at **REVIEW** until a real team/facilitator supplies outcome evidence.
+
+A synthetic drill can prove the exercise machinery works. It cannot prove that a real organization became safer, clearer or better prepared.
