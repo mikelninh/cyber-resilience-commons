@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test test.mjs drill.test.mjs dependency-map.test.mjs",
+    "test": "node --test test.mjs drill.test.mjs dependency-map.test.mjs release-gate.test.mjs",
     "check": "npm test"
   }
 }
